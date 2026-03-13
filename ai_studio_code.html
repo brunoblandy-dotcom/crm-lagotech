@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LagoTech 360 - CRM</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700&family=DM+Mono:wght@500&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0d0d0c;--s1:#161513;--s2:#1e1c19;--s3:#252320;--bd:#2a2724;--ink:#eeeae2;--dim:#6e6860;--gr:#16a34a;--gr2:#4ade80;--am:#f59e0b;--re:#ef4444;--bl:#3b82f6;--f:'Sora',sans-serif;--fm:'DM Mono',monospace}
+body{font-family:var(--f);background:var(--bg);color:var(--ink);font-size:14px;overflow-x:hidden}
+.btn{background:var(--gr);color:#fff;border:none;padding:10px 14px;border-radius:8px;font-family:var(--f);font-size:.8rem;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:5px;justify-content:center}
+.btn:hover{opacity:.8} .bG{background:var(--s3);color:var(--ink);border:1px solid var(--bd)} .bSm{padding:6px 10px;font-size:.7rem}
+.fi{width:100%;background:var(--s2);border:1px solid var(--bd);color:var(--ink);padding:9px 12px;border-radius:8px;font-family:var(--f);outline:none;margin-bottom:10px}
+.fi:focus{border-color:var(--gr)} .fl{font-size:.6rem;font-weight:700;color:var(--dim);text-transform:uppercase;display:block;margin-bottom:4px}
+.fRow{display:grid;grid-template-columns:1fr 1fr;gap:10px} 
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:10px;padding:15px;margin-bottom:12px}
+.cardT{font-size:.65rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--dim);margin-bottom:10px}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:999;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none}
+.ov.open{opacity:1;pointer-events:all} .modal{background:var(--s1);border-radius:12px;padding:20px;width:400px;max-width:95vw;border:1px solid var(--bd);max-height:90vh;overflow-y:auto}
+.g4{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:12px}
+.sc{background:var(--s1);border:1px solid var(--bd);border-radius:10px;padding:15px}
+.scVal{font-family:var(--fm);font-size:1.6rem;font-weight:700}
+.shell{display:flex;min-height:100vh} .sb{width:220px;background:var(--s1);border-right:1px solid var(--bd);display:flex;flex-direction:column}
+.main{flex:1;display:flex;flex-direction:column;height:100vh;overflow-y:auto} .tb{padding:15px 20px;border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center;background:var(--s1);position:sticky;top:0;z-index:10}
+.ct{padding:20px} .ni{padding:10px 15px;color:var(--dim);cursor:pointer;font-weight:600;font-size:.8rem} .ni.act{background:rgba(22,163,74,.15);color:var(--gr2);border-right:3px solid var(--gr)} .ni:hover{background:var(--s2)}
+#scrLogin, #scrLock{position:fixed;inset:0;background:var(--bg);z-index:1000;display:flex;align-items:center;justify-content:center}
+.empty{text-align:center;padding:30px;color:var(--dim)}
+</style>
+</head>
+<body>
+
+<div id="scrLock" style="display:none">
+  <div style="text-align:center;max-width:300px">
+    <div style="font-size:3rem">🔒</div>
+    <h2 style="color:var(--re);margin:10px 0">Acesso Bloqueado</h2>
+    <p style="color:var(--dim);font-size:.8rem;margin-bottom:20px">Sua mensalidade expirou. Renove para continuar.</p>
+  </div>
+</div>
+
+<div id="scrLogin">
+  <div class="card" style="width:340px;text-align:center">
+    <div style="font-size:2rem;margin-bottom:10px">⚡</div>
+    <h2 style="margin-bottom:5px">LagoTech 360</h2>
+    <p style="color:var(--dim);font-size:.7rem;margin-bottom:20px">CRM SaaS</p>
+    <div id="lgErr" style="color:var(--re);font-size:.7rem;margin-bottom:10px"></div>
+    <input class="fi" id="lEmail" type="email" placeholder="E-mail"/>
+    <input class="fi" id="lPass" type="password" placeholder="Senha"/>
+    <button class="btn" id="lgBtn" style="width:100%" onclick="doLogin()">Entrar no Sistema</button>
+  </div>
+</div>
+
+<div class="ov" id="mCheckout" onclick="if(event.target.id==='mCheckout')closeM('mCheckout')">
+  <div class="modal">
+    <div style="font-weight:bold;margin-bottom:15px;display:flex;justify-content:space-between">Finalizar <span onclick="closeM('mCheckout')" style="cursor:pointer">✕</span></div>
+    <div style="background:var(--s2);padding:10px;border-radius:8px;margin-bottom:10px;text-align:center;border:1px dashed var(--am)">
+      <div style="font-size:.6rem;color:var(--dim)">SALDO DO CLIENTE</div>
+      <div style="font-size:1.4rem;color:var(--am);font-family:var(--fm);font-weight:bold" id="chkCbSaldo">R$ 0.00</div>
+    </div>
+    <div class="fRow">
+      <div><label class="fl">Total (R$)</label><input class="fi" type="number" id="chkTotal" oninput="calcPagar()"/></div>
+      <div><label class="fl">Usar Cashback</label><input class="fi" type="number" id="chkUsarCb" value="0" oninput="calcPagar()"/></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;padding:10px 0;border-top:1px solid var(--bd);margin-bottom:10px">
+      <span style="font-weight:bold">A PAGAR AGORA:</span>
+      <span style="font-family:var(--fm);font-size:1.2rem;color:var(--gr2);font-weight:bold" id="chkPagar">R$ 0.00</span>
+    </div>
+    <label class="fl">Forma de Pagamento</label>
+    <select class="fi" id="chkPgto"><option value="pix">PIX</option><option value="dinheiro">Dinheiro</option><option value="credito">Crédito</option></select>
+    <input type="hidden" id="chkApptId"/><input type="hidden" id="chkCliId"/>
+    <div style="display:flex;justify-content:flex-end;gap:10px">
+      <button class="btn bG" onclick="closeM('mCheckout')">Cancelar</button>
+      <button class="btn" id="btnFinalizar" onclick="processarCheckout()">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<div class="ov" id="mAgend" onclick="if(event.target.id==='mAgend')closeM('mAgend')">
+  <div class="modal">
+    <div style="font-weight:bold;margin-bottom:15px;display:flex;justify-content:space-between">Atendimento <span onclick="closeM('mAgend')" style="cursor:pointer">✕</span></div>
+    <div style="display:flex;gap:10px;margin-bottom:10px;background:var(--s2);padding:10px;border-radius:8px">
+      <label><input type="radio" name="tipoA" value="fila" checked onclick="el('divData').style.display='none'"/> Chegou Agora</label>
+      <label><input type="radio" name="tipoA" value="agenda" onclick="el('divData').style.display='block'"/> Agendar</label>
+    </div>
+    <label class="fl">Cliente</label><select class="fi" id="aCli"></select>
+    <div class="fRow">
+      <div><label class="fl">Serviço</label><select class="fi" id="aServ"></select></div>
+      <div><label class="fl">Prof.</label><select class="fi" id="aProf"></select></div>
+    </div>
+    <div id="divData" style="display:none"><label class="fl">Data/Hora</label><input class="fi" type="datetime-local" id="aData"/></div>
+    <button class="btn" style="width:100%" onclick="salvarAgendamento()">Confirmar</button>
+  </div>
+</div>
+
+<div class="ov" id="mCli" onclick="if(event.target.id==='mCli')closeM('mCli')">
+  <div class="modal">
+    <div style="font-weight:bold;margin-bottom:15px;display:flex;justify-content:space-between">Novo Cliente <span onclick="closeM('mCli')" style="cursor:pointer">✕</span></div>
+    <label class="fl">Nome</label><input class="fi" id="cNome"/>
+    <label class="fl">WhatsApp</label><input class="fi" id="cTel" placeholder="22999999999"/>
+    <label class="fl">Origem</label>
+    <select class="fi" id="cUO"><option value="Presencial">Presencial</option><option value="Instagram">Instagram</option><option value="Google Maps">Google Maps</option></select>
+    <button class="btn" style="width:100%" onclick="salvarCliente()">Salvar</button>
+  </div>
+</div>
+
+<div id="scrApp" style="display:none">
+  <div class="shell">
+    <aside class="sb">
+      <div style="padding:20px;border-bottom:1px solid var(--bd)">
+        <h2 style="color:var(--gr2);font-size:1.1rem" id="sbNome">Carregando...</h2>
+        <p style="color:var(--dim);font-size:.6rem">LagoTech 360</p>
+      </div>
+      <div style="padding:10px 0">
+        <div class="ni act" id="ni-dash" onclick="go('dash')">📊 Dashboard</div>
+        <div class="ni" id="ni-agenda" onclick="go('agenda')">📅 Fila & Agenda</div>
+        <div class="ni" id="ni-clientes" onclick="go('clientes')">👥 Clientes</div>
+        <div class="ni" id="ni-caixa" onclick="go('caixa')">💵 Caixa Diário</div>
+        <div class="ni" id="ni-config" onclick="go('config')">⚙️ Configurações</div>
+      </div>
+      <div style="margin-top:auto;padding:20px;border-top:1px solid var(--bd)">
+        <button class="btn bG" style="width:100%" onclick="doLogout()">Sair</button>
+      </div>
+    </aside>
+    <main class="main">
+      <div class="tb">
+        <div><h2 id="pgT">Dashboard</h2><div id="pgS" style="font-size:.7rem;color:var(--dim)">Visão Geral</div></div>
+        <div id="tbR"></div>
+      </div>
+      <div class="ct" id="ct"></div>
+    </main>
+  </div>
+</div>
+
+<script>
+const SB = supabase.createClient(CONFIG.supabase.url, CONFIG.supabase.anonKey);
+let G = { user:null, profile:null, company:null, companyId:null, services:[], profiles:[], customers:[] };
+
+const el = id => document.getElementById(id);
+const openM = id => el(id).classList.add('open');
+const closeM = id => el(id).classList.remove('open');
+const fmtM = v => 'R$ ' + (parseFloat(v)||0).toLocaleString('pt-BR',{minimumFractionDigits:2});
+const hoje = () => new Date().toISOString().split('T')[0];
+
+async function doLogin(){
+  el('lgBtn').textContent = 'Conectando...';
+  const { data, error } = await SB.auth.signInWithPassword({email: el('lEmail').value.trim(), password: el('lPass').value});
+  if(error){ el('lgErr').textContent = error.message; el('lgBtn').textContent = 'Entrar'; return; }
+  await initApp(data.user);
+}
+async function doLogout(){ await SB.auth.signOut(); location.reload(); }
+
+async function initApp(user){
+  G.user = user;
+  const { data: pData } = await SB.from('profiles').select('*, companies(*)').eq('id', user.id).single();
+  if(!pData) return; 
+  G.profile = pData; G.company = pData.companies; G.companyId = pData.company_id;
+
+  if(new Date(G.company.trial_ends_at) < new Date() && G.company.status !== 'active'){
+    el('scrLogin').style.display='none'; el('scrLock').style.display='flex'; return;
+  }
+
+  el('sbNome').textContent = G.company.name;
+  el('scrLogin').style.display='none'; el('scrApp').style.display='block';
+  await loadData(); go('dash');
+}
+
+async function loadData(){
+  const[sRes, pRes, cRes] = await Promise.all([
+    SB.from('services').select('*').eq('active',true),
+    SB.from('profiles').select('id, full_name'),
+    SB.from('customers').select('id, name, phone, wallet_balance').is('deleted_at', null).order('name')
+  ]);
+  G.services = sRes.data||[]; G.profiles = pRes.data||[]; G.customers = cRes.data||[];
+  if(el('aProf')) el('aProf').innerHTML = G.profiles.map(p => `<option value="${p.id}">${p.full_name}</option>`).join('');
+  if(el('aServ')) el('aServ').innerHTML = G.services.map(s => `<option value="${s.id}" data-price="${s.price}">${s.name} - ${fmtM(s.price)}</option>`).join('');
+  if(el('aCli')) el('aCli').innerHTML = G.customers.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+}
+
+function go(id){
+  document.querySelectorAll('.ni').forEach(n => n.classList.remove('act')); el('ni-'+id).classList.add('act');
+  const map = {
+    dash: ['Dashboard', 'Métricas', ''],
+    agenda:['Fila & Agenda', 'Operacional', '<button class="btn bSm" onclick="openM(\'mAgend\')">+ Atendimento</button>'],
+    clientes:['Clientes', 'Saldos', '<button class="btn bSm" onclick="openM(\'mCli\')">+ Novo Cliente</button>'],
+    caixa:['Caixa Diário', 'Entradas', ''],
+    config:['Configurações', 'Z-API e Cashback', '<button class="btn bSm" onclick="salvarConfig()">💾 Salvar</button>']
+  };
+  el('pgT').textContent = map[id][0]; el('pgS').textContent = map[id][1]; el('tbR').innerHTML = map[id][2];
+  if(id==='dash') rDash(); else if(id==='agenda') rAgenda(); else if(id==='clientes') rClientes(); else if(id==='caixa') rCaixa(); else if(id==='config') rConfig();
+}
+
+async function rDash(){
+  el('ct').innerHTML = 'Carregando...';
+  const { data: s } = await SB.rpc('get_business_summary', { cp_id: G.companyId });
+  if(!s) return;
+  el('ct').innerHTML = `
+    <div class="g4">
+      <div class="sc"><div style="color:var(--dim);font-size:.7rem">Faturado Hoje</div><div class="scVal" style="color:var(--gr2)">${fmtM(s.today_revenue)}</div></div>
+      <div class="sc"><div style="color:var(--dim);font-size:.7rem">Atendimentos</div><div class="scVal">${s.today_appointments}</div></div>
+      <div class="sc"><div style="color:var(--dim);font-size:.7rem">Na Fila</div><div class="scVal" style="color:var(--am)">${s.queue_waiting}</div></div>
+      <div class="sc"><div style="color:var(--dim);font-size:.7rem">Total Clientes</div><div class="scVal">${s.total_customers}</div></div>
+    </div>
+    <div class="card"><div class="cardT">RECEITA POR ORIGEM (UTM)</div>
+      ${(s.utm_performance||[]).map(u => u.source ? `<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--bd)"><span>${u.source}</span><span style="color:var(--gr2);font-weight:bold">${fmtM(u.revenue)}</span></div>` : '').join('') || '<div class="empty">Sem dados</div>'}
+    </div>`;
+}
+
+async function salvarAgendamento(){
+  const isFila = document.querySelector('input[name="tipoA"]:checked').value === 'fila';
+  await SB.from('appointments').insert({
+    company_id: G.companyId, customer_id: el('aCli').value, service_id: el('aServ').value, professional_id: el('aProf').value,
+    is_walk_in: isFila, scheduled_at: isFila ? new Date().toISOString() : new Date(el('aData').value).toISOString(), status: isFila?'aguardando':'agendado'
+  });
+  closeM('mAgend'); rAgenda();
+}
+
+async function rAgenda(){
+  el('ct').innerHTML = 'Carregando...';
+  const { data } = await SB.from('appointments').select('id, is_walk_in, status, scheduled_at, customers(id, name, wallet_balance), services(name, price)')
+    .is('deleted_at', null).eq('scheduled_at::date', hoje()).order('scheduled_at');
+  
+  const filas = (data||[]).filter(a => a.is_walk_in && a.status !== 'concluido');
+  const agend = (data||
