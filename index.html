@@ -2,223 +2,324 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>LagoTech 360 - CRM</title>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700&family=DM+Mono:wght@500&display=swap" rel="stylesheet"/>
+<title>LagoTech 360</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="config.js"></script>
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#0d0d0c;--s1:#161513;--s2:#1e1c19;--s3:#252320;--bd:#2a2724;--ink:#eeeae2;--dim:#6e6860;--gr:#16a34a;--gr2:#4ade80;--am:#f59e0b;--re:#ef4444;--bl:#3b82f6;--f:'Sora',sans-serif;--fm:'DM Mono',monospace}
-body{font-family:var(--f);background:var(--bg);color:var(--ink);font-size:14px;overflow-x:hidden}
-.btn{background:var(--gr);color:#fff;border:none;padding:10px 14px;border-radius:8px;font-family:var(--f);font-size:.8rem;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:5px;justify-content:center}
-.btn:hover{opacity:.8} .bG{background:var(--s3);color:var(--ink);border:1px solid var(--bd)} .bSm{padding:6px 10px;font-size:.7rem}
-.fi{width:100%;background:var(--s2);border:1px solid var(--bd);color:var(--ink);padding:9px 12px;border-radius:8px;font-family:var(--f);outline:none;margin-bottom:10px}
-.fi:focus{border-color:var(--gr)} .fl{font-size:.6rem;font-weight:700;color:var(--dim);text-transform:uppercase;display:block;margin-bottom:4px}
-.fRow{display:grid;grid-template-columns:1fr 1fr;gap:10px} 
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Sora',sans-serif}
+:root{--bg:#0d0d0c;--s1:#161513;--s2:#1e1c19;--bd:#2a2724;--ink:#eeeae2;--dim:#6e6860;--gr:#16a34a;--gr2:#4ade80;--am:#f59e0b;--re:#ef4444;--fm:'DM Mono',monospace}
+body{background:var(--bg);color:var(--ink);font-size:14px;overflow-x:hidden}
+.btn{background:var(--gr);color:#fff;border:none;padding:10px;border-radius:8px;font-weight:700;cursor:pointer;width:100%}
+.btn:hover{opacity:.8} .bG{background:var(--s2);border:1px solid var(--bd)}
+.fi{width:100%;background:var(--s2);border:1px solid var(--bd);color:var(--ink);padding:10px;border-radius:8px;outline:none;margin-bottom:10px}
+.fl{font-size:.65rem;font-weight:700;color:var(--dim);text-transform:uppercase;margin-bottom:4px;display:block}
 .card{background:var(--s1);border:1px solid var(--bd);border-radius:10px;padding:15px;margin-bottom:12px}
-.cardT{font-size:.65rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--dim);margin-bottom:10px}
-.ov{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:999;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none}
-.ov.open{opacity:1;pointer-events:all} .modal{background:var(--s1);border-radius:12px;padding:20px;width:400px;max-width:95vw;border:1px solid var(--bd);max-height:90vh;overflow-y:auto}
-.g4{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:12px}
-.sc{background:var(--s1);border:1px solid var(--bd);border-radius:10px;padding:15px}
-.scVal{font-family:var(--fm);font-size:1.6rem;font-weight:700}
-.shell{display:flex;min-height:100vh} .sb{width:220px;background:var(--s1);border-right:1px solid var(--bd);display:flex;flex-direction:column}
-.main{flex:1;display:flex;flex-direction:column;height:100vh;overflow-y:auto} .tb{padding:15px 20px;border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center;background:var(--s1);position:sticky;top:0;z-index:10}
-.ct{padding:20px} .ni{padding:10px 15px;color:var(--dim);cursor:pointer;font-weight:600;font-size:.8rem} .ni.act{background:rgba(22,163,74,.15);color:var(--gr2);border-right:3px solid var(--gr)} .ni:hover{background:var(--s2)}
-#scrLogin, #scrLock{position:fixed;inset:0;background:var(--bg);z-index:1000;display:flex;align-items:center;justify-content:center}
-.empty{text-align:center;padding:30px;color:var(--dim)}
+.cardT{font-size:.7rem;font-weight:700;color:var(--dim);text-transform:uppercase;margin-bottom:10px}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:99;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none}
+.ov.open{opacity:1;pointer-events:all}
+.mod{background:var(--s1);padding:20px;border-radius:12px;width:90%;max-width:400px;border:1px solid var(--bd);max-height:90vh;overflow-y:auto}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.shell{display:flex;height:100vh} .sb{width:220px;background:var(--s1);border-right:1px solid var(--bd);display:flex;flex-direction:column}
+.main{flex:1;display:flex;flex-direction:column;overflow-y:auto}
+.tb{padding:15px 20px;border-bottom:1px solid var(--bd);background:var(--s1);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0}
+.ct{padding:20px} .ni{padding:12px 20px;color:var(--dim);cursor:pointer;font-weight:600} .ni.act{background:rgba(22,163,74,.1);color:var(--gr2);border-right:3px solid var(--gr)}
+#sLog, #sLck{position:fixed;inset:0;background:var(--bg);z-index:100;display:flex;align-items:center;justify-content:center}
+.cbBox{background:var(--s2);padding:10px;border:1px dashed var(--am);border-radius:8px;text-align:center;margin-bottom:10px}
 </style>
 </head>
 <body>
 
-<div id="scrLock" style="display:none">
-  <div style="text-align:center;max-width:300px">
-    <div style="font-size:3rem">🔒</div>
-    <h2 style="color:var(--re);margin:10px 0">Acesso Bloqueado</h2>
-    <p style="color:var(--dim);font-size:.8rem;margin-bottom:20px">Sua mensalidade expirou. Renove para continuar.</p>
+<!-- BLOQUEIO (INADIMPLÊNCIA) -->
+<div id="sLck" style="display:none"><div class="card" style="text-align:center"><h1>🔒 Bloqueado</h1><p style="color:var(--dim);margin-top:10px">Mensalidade expirada. Renove seu plano.</p></div></div>
+
+<!-- LOGIN -->
+<div id="sLog">
+  <div class="card" style="width:320px;text-align:center">
+    <h2>⚡ LagoTech 360</h2>
+    <div id="lErr" style="color:var(--re);margin:10px 0;font-size:12px"></div>
+    <input class="fi" id="lEm" placeholder="E-mail" type="email">
+    <input class="fi" type="password" id="lPw" placeholder="Senha">
+    <button class="btn" onclick="login()" id="bLog">Entrar</button>
   </div>
 </div>
 
-<div id="scrLogin">
-  <div class="card" style="width:340px;text-align:center">
-    <div style="font-size:2rem;margin-bottom:10px">⚡</div>
-    <h2 style="margin-bottom:5px">LagoTech 360</h2>
-    <p style="color:var(--dim);font-size:.7rem;margin-bottom:20px">CRM SaaS</p>
-    <div id="lgErr" style="color:var(--re);font-size:.7rem;margin-bottom:10px"></div>
-    <input class="fi" id="lEmail" type="email" placeholder="E-mail"/>
-    <input class="fi" id="lPass" type="password" placeholder="Senha"/>
-    <button class="btn" id="lgBtn" style="width:100%" onclick="doLogin()">Entrar no Sistema</button>
+<!-- MODAIS -->
+<!-- 1. CHECKOUT CASHBACK -->
+<div class="ov" id="mChk"><div class="mod">
+  <h3>Checkout <span style="float:right;cursor:pointer" onclick="cM('mChk')">✕</span></h3><br>
+  <div class="cbBox"><div class="fl">Cashback do Cliente</div><h2 style="color:var(--am);font-family:var(--fm)" id="cSal">R$ 0,00</h2></div>
+  <div class="g2">
+    <div><label class="fl">Total</label><input class="fi" type="number" id="cTot" oninput="calc()"></div>
+    <div><label class="fl">Usar Cashback</label><input class="fi" type="number" id="cUsa" value="0" oninput="calc()"></div>
   </div>
-</div>
+  <h3 style="margin:10px 0">Pagar: <span id="cPag" style="color:var(--gr2);font-family:var(--fm)">R$ 0,00</span></h3>
+  <label class="fl">Pagamento</label>
+  <select class="fi" id="cPgto"><option value="pix">PIX</option><option value="dinheiro">Dinheiro</option><option value="credito">Crédito</option></select>
+  <input type="hidden" id="cIdA"><input type="hidden" id="cIdC">
+  <button class="btn" id="bChk" onclick="pay()">Confirmar Pagamento</button>
+</div></div>
 
-<div class="ov" id="mCheckout" onclick="if(event.target.id==='mCheckout')closeM('mCheckout')">
-  <div class="modal">
-    <div style="font-weight:bold;margin-bottom:15px;display:flex;justify-content:space-between">Finalizar <span onclick="closeM('mCheckout')" style="cursor:pointer">✕</span></div>
-    <div style="background:var(--s2);padding:10px;border-radius:8px;margin-bottom:10px;text-align:center;border:1px dashed var(--am)">
-      <div style="font-size:.6rem;color:var(--dim)">SALDO DO CLIENTE</div>
-      <div style="font-size:1.4rem;color:var(--am);font-family:var(--fm);font-weight:bold" id="chkCbSaldo">R$ 0.00</div>
-    </div>
-    <div class="fRow">
-      <div><label class="fl">Total (R$)</label><input class="fi" type="number" id="chkTotal" oninput="calcPagar()"/></div>
-      <div><label class="fl">Usar Cashback</label><input class="fi" type="number" id="chkUsarCb" value="0" oninput="calcPagar()"/></div>
-    </div>
-    <div style="display:flex;justify-content:space-between;padding:10px 0;border-top:1px solid var(--bd);margin-bottom:10px">
-      <span style="font-weight:bold">A PAGAR AGORA:</span>
-      <span style="font-family:var(--fm);font-size:1.2rem;color:var(--gr2);font-weight:bold" id="chkPagar">R$ 0.00</span>
-    </div>
-    <label class="fl">Forma de Pagamento</label>
-    <select class="fi" id="chkPgto"><option value="pix">PIX</option><option value="dinheiro">Dinheiro</option><option value="credito">Crédito</option></select>
-    <input type="hidden" id="chkApptId"/><input type="hidden" id="chkCliId"/>
-    <div style="display:flex;justify-content:flex-end;gap:10px">
-      <button class="btn bG" onclick="closeM('mCheckout')">Cancelar</button>
-      <button class="btn" id="btnFinalizar" onclick="processarCheckout()">Confirmar</button>
-    </div>
+<!-- 2. ATENDIMENTO -->
+<div class="ov" id="mAg"><div class="mod">
+  <h3>Atendimento <span style="float:right;cursor:pointer" onclick="cM('mAg')">✕</span></h3><br>
+  <div style="background:var(--s2);padding:10px;border-radius:8px;margin-bottom:10px;display:flex;gap:10px">
+    <label><input type="radio" name="tAg" value="fila" checked onclick="document.getElementById('dDt').style.display='none'"> Fila (Agora)</label>
+    <label><input type="radio" name="tAg" value="agenda" onclick="document.getElementById('dDt').style.display='block'"> Agendar</label>
   </div>
-</div>
+  <label class="fl">Cliente</label><select class="fi" id="aCli"></select>
+  <div class="g2"><div><label class="fl">Serviço</label><select class="fi" id="aSer"></select></div><div><label class="fl">Profissional</label><select class="fi" id="aPro"></select></div></div>
+  <div id="dDt" style="display:none"><label class="fl">Data/Hora</label><input class="fi" type="datetime-local" id="aDt"></div>
+  <button class="btn" onclick="saveAg()">Salvar</button>
+</div></div>
 
-<div class="ov" id="mAgend" onclick="if(event.target.id==='mAgend')closeM('mAgend')">
-  <div class="modal">
-    <div style="font-weight:bold;margin-bottom:15px;display:flex;justify-content:space-between">Atendimento <span onclick="closeM('mAgend')" style="cursor:pointer">✕</span></div>
-    <div style="display:flex;gap:10px;margin-bottom:10px;background:var(--s2);padding:10px;border-radius:8px">
-      <label><input type="radio" name="tipoA" value="fila" checked onclick="el('divData').style.display='none'"/> Chegou Agora</label>
-      <label><input type="radio" name="tipoA" value="agenda" onclick="el('divData').style.display='block'"/> Agendar</label>
-    </div>
-    <label class="fl">Cliente</label><select class="fi" id="aCli"></select>
-    <div class="fRow">
-      <div><label class="fl">Serviço</label><select class="fi" id="aServ"></select></div>
-      <div><label class="fl">Prof.</label><select class="fi" id="aProf"></select></div>
-    </div>
-    <div id="divData" style="display:none"><label class="fl">Data/Hora</label><input class="fi" type="datetime-local" id="aData"/></div>
-    <button class="btn" style="width:100%" onclick="salvarAgendamento()">Confirmar</button>
+<!-- 3. CLIENTE -->
+<div class="ov" id="mCli"><div class="mod">
+  <h3>Novo Cliente <span style="float:right;cursor:pointer" onclick="cM('mCli')">✕</span></h3><br>
+  <label class="fl">Nome</label><input class="fi" id="cN">
+  <label class="fl">WhatsApp</label><input class="fi" id="cW" placeholder="22999999999">
+  <label class="fl">Origem (UTM)</label><select class="fi" id="cO"><option value="Presencial">Presencial</option><option value="Instagram">Instagram</option><option value="Google Maps">Google Maps</option></select>
+  <button class="btn" onclick="saveCli()">Salvar</button>
+</div></div>
+
+<!-- APP -->
+<div class="shell" id="sApp" style="display:none">
+  <div class="sb">
+    <div style="padding:20px;border-bottom:1px solid var(--bd)"><h3 style="color:var(--gr2)" id="sNm">Empresa</h3><span style="font-size:10px;color:var(--dim)">LagoTech 360</span></div>
+    <div class="ni act" id="n-dash" onclick="go('dash')">📊 Dashboard</div>
+    <div class="ni" id="n-age" onclick="go('age')">📅 Agenda & Fila</div>
+    <div class="ni" id="n-cli" onclick="go('cli')">👥 Clientes</div>
+    <div class="ni" id="n-cai" onclick="go('cai')">💵 Caixa</div>
+    <div class="ni" id="n-cfg" onclick="go('cfg')">⚙️ Configurações</div>
+    <div style="margin-top:auto;padding:20px"><button class="btn bG" onclick="SB.auth.signOut().then(()=>location.reload())">Sair do Sistema</button></div>
   </div>
-</div>
-
-<div class="ov" id="mCli" onclick="if(event.target.id==='mCli')closeM('mCli')">
-  <div class="modal">
-    <div style="font-weight:bold;margin-bottom:15px;display:flex;justify-content:space-between">Novo Cliente <span onclick="closeM('mCli')" style="cursor:pointer">✕</span></div>
-    <label class="fl">Nome</label><input class="fi" id="cNome"/>
-    <label class="fl">WhatsApp</label><input class="fi" id="cTel" placeholder="22999999999"/>
-    <label class="fl">Origem</label>
-    <select class="fi" id="cUO"><option value="Presencial">Presencial</option><option value="Instagram">Instagram</option><option value="Google Maps">Google Maps</option></select>
-    <button class="btn" style="width:100%" onclick="salvarCliente()">Salvar</button>
-  </div>
-</div>
-
-<div id="scrApp" style="display:none">
-  <div class="shell">
-    <aside class="sb">
-      <div style="padding:20px;border-bottom:1px solid var(--bd)">
-        <h2 style="color:var(--gr2);font-size:1.1rem" id="sbNome">Carregando...</h2>
-        <p style="color:var(--dim);font-size:.6rem">LagoTech 360</p>
-      </div>
-      <div style="padding:10px 0">
-        <div class="ni act" id="ni-dash" onclick="go('dash')">📊 Dashboard</div>
-        <div class="ni" id="ni-agenda" onclick="go('agenda')">📅 Fila & Agenda</div>
-        <div class="ni" id="ni-clientes" onclick="go('clientes')">👥 Clientes</div>
-        <div class="ni" id="ni-caixa" onclick="go('caixa')">💵 Caixa Diário</div>
-        <div class="ni" id="ni-config" onclick="go('config')">⚙️ Configurações</div>
-      </div>
-      <div style="margin-top:auto;padding:20px;border-top:1px solid var(--bd)">
-        <button class="btn bG" style="width:100%" onclick="doLogout()">Sair</button>
-      </div>
-    </aside>
-    <main class="main">
-      <div class="tb">
-        <div><h2 id="pgT">Dashboard</h2><div id="pgS" style="font-size:.7rem;color:var(--dim)">Visão Geral</div></div>
-        <div id="tbR"></div>
-      </div>
-      <div class="ct" id="ct"></div>
-    </main>
+  <div class="main">
+    <div class="tb">
+      <div><h2 id="pT">Dashboard</h2><span id="pS" style="color:var(--dim);font-size:12px">Métricas</span></div>
+      <div id="pB"></div>
+    </div>
+    <div class="ct" id="ct"></div>
   </div>
 </div>
 
 <script>
+// ==========================================
+// LÓGICA E CONEXÃO SUPABASE
+// ==========================================
 const SB = supabase.createClient(CONFIG.supabase.url, CONFIG.supabase.anonKey);
-let G = { user:null, profile:null, company:null, companyId:null, services:[], profiles:[], customers:[] };
+let G = { cid:null, cmp:null, srv:[], pro:[], cli:[] };
 
-const el = id => document.getElementById(id);
-const openM = id => el(id).classList.add('open');
-const closeM = id => el(id).classList.remove('open');
-const fmtM = v => 'R$ ' + (parseFloat(v)||0).toLocaleString('pt-BR',{minimumFractionDigits:2});
-const hoje = () => new Date().toISOString().split('T')[0];
+const el = i => document.getElementById(i);
+const cM = i => el(i).classList.remove('open');
+const oM = i => el(i).classList.add('open');
+const fM = v => 'R$ '+Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2});
+const hj = () => new Date().toISOString().split('T')[0];
 
-async function doLogin(){
-  el('lgBtn').textContent = 'Conectando...';
-  const { data, error } = await SB.auth.signInWithPassword({email: el('lEmail').value.trim(), password: el('lPass').value});
-  if(error){ el('lgErr').textContent = error.message; el('lgBtn').textContent = 'Entrar'; return; }
-  await initApp(data.user);
+// --- LOGIN ---
+async function login(){
+  el('bLog').innerText='Entrando...';
+  const {data,error} = await SB.auth.signInWithPassword({email:el('lEm').value.trim(), password:el('lPw').value});
+  if(error) { el('lErr').innerText=error.message; el('bLog').innerText='Entrar'; return; }
+  init(data.user);
 }
-async function doLogout(){ await SB.auth.signOut(); location.reload(); }
+SB.auth.getSession().then(({data})=>{ if(data?.session) init(data.session.user); });
 
-async function initApp(user){
-  G.user = user;
-  const { data: pData } = await SB.from('profiles').select('*, companies(*)').eq('id', user.id).single();
-  if(!pData) return; 
-  G.profile = pData; G.company = pData.companies; G.companyId = pData.company_id;
-
-  if(new Date(G.company.trial_ends_at) < new Date() && G.company.status !== 'active'){
-    el('scrLogin').style.display='none'; el('scrLock').style.display='flex'; return;
+async function init(u){
+  const {data:p} = await SB.from('profiles').select('*, companies(*)').eq('id',u.id).single();
+  if(!p) return;
+  G.cid = p.company_id; G.cmp = p.companies;
+  
+  if(new Date(G.cmp.trial_ends_at) < new Date() && G.cmp.status !== 'active') { 
+    el('sLog').style.display='none'; el('sLck').style.display='flex'; return; 
   }
-
-  el('sbNome').textContent = G.company.name;
-  el('scrLogin').style.display='none'; el('scrApp').style.display='block';
-  await loadData(); go('dash');
+  
+  el('sNm').innerText = G.cmp.name;
+  el('sLog').style.display='none'; el('sApp').style.display='flex';
+  await load(); go('dash');
 }
 
-async function loadData(){
-  const[sRes, pRes, cRes] = await Promise.all([
+async function load(){
+  const [s,p,c] = await Promise.all([
     SB.from('services').select('*').eq('active',true),
-    SB.from('profiles').select('id, full_name'),
-    SB.from('customers').select('id, name, phone, wallet_balance').is('deleted_at', null).order('name')
+    SB.from('profiles').select('id,full_name'),
+    SB.from('customers').select('*').is('deleted_at',null).order('name')
   ]);
-  G.services = sRes.data||[]; G.profiles = pRes.data||[]; G.customers = cRes.data||[];
-  if(el('aProf')) el('aProf').innerHTML = G.profiles.map(p => `<option value="${p.id}">${p.full_name}</option>`).join('');
-  if(el('aServ')) el('aServ').innerHTML = G.services.map(s => `<option value="${s.id}" data-price="${s.price}">${s.name} - ${fmtM(s.price)}</option>`).join('');
-  if(el('aCli')) el('aCli').innerHTML = G.customers.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+  G.srv=s.data||[]; G.pro=p.data||[]; G.cli=c.data||[];
+  if(el('aPro')) el('aPro').innerHTML = G.pro.map(x=>`<option value="${x.id}">${x.full_name}</option>`).join('');
+  if(el('aSer')) el('aSer').innerHTML = G.srv.map(x=>`<option value="${x.id}" data-p="${x.price}">${x.name} - ${fM(x.price)}</option>`).join('');
+  if(el('aCli')) el('aCli').innerHTML = G.cli.map(x=>`<option value="${x.id}">${x.name}</option>`).join('');
 }
 
-function go(id){
-  document.querySelectorAll('.ni').forEach(n => n.classList.remove('act')); el('ni-'+id).classList.add('act');
-  const map = {
-    dash: ['Dashboard', 'Métricas', ''],
-    agenda:['Fila & Agenda', 'Operacional', '<button class="btn bSm" onclick="openM(\'mAgend\')">+ Atendimento</button>'],
-    clientes:['Clientes', 'Saldos', '<button class="btn bSm" onclick="openM(\'mCli\')">+ Novo Cliente</button>'],
-    caixa:['Caixa Diário', 'Entradas', ''],
-    config:['Configurações', 'Z-API e Cashback', '<button class="btn bSm" onclick="salvarConfig()">💾 Salvar</button>']
+// --- ROTEADOR ---
+function go(pg){
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('act')); el('n-'+pg).classList.add('act');
+  const m = {
+    dash:['Dashboard','Visão Geral',''],
+    age:['Fila & Agenda','Atendimentos',`<button class="btn" style="width:auto;padding:8px 15px" onclick="oM('mAg')">+ Atendimento</button>`],
+    cli:['Clientes','Gestão',`<button class="btn" style="width:auto;padding:8px 15px" onclick="oM('mCli')">+ Novo Cliente</button>`],
+    cai:['Caixa','Lançamentos',''],
+    cfg:['Configurações','Z-API e Cashback',`<button class="btn" style="width:auto;padding:8px 15px" onclick="svCfg()">💾 Salvar</button>`]
   };
-  el('pgT').textContent = map[id][0]; el('pgS').textContent = map[id][1]; el('tbR').innerHTML = map[id][2];
-  if(id==='dash') rDash(); else if(id==='agenda') rAgenda(); else if(id==='clientes') rClientes(); else if(id==='caixa') rCaixa(); else if(id==='config') rConfig();
+  el('pT').innerText=m[pg][0]; el('pS').innerText=m[pg][1]; el('pB').innerHTML=m[pg][2];
+  if(pg==='dash') rDash(); if(pg==='age') rAge(); if(pg==='cli') rCli(); if(pg==='cai') rCai(); if(pg==='cfg') rCfg();
 }
 
+// --- DASHBOARD ---
 async function rDash(){
-  el('ct').innerHTML = 'Carregando...';
-  const { data: s } = await SB.rpc('get_business_summary', { cp_id: G.companyId });
+  el('ct').innerHTML='Carregando métricas...';
+  const {data:s} = await SB.rpc('get_business_summary',{cp_id:G.cid});
   if(!s) return;
   el('ct').innerHTML = `
-    <div class="g4">
-      <div class="sc"><div style="color:var(--dim);font-size:.7rem">Faturado Hoje</div><div class="scVal" style="color:var(--gr2)">${fmtM(s.today_revenue)}</div></div>
-      <div class="sc"><div style="color:var(--dim);font-size:.7rem">Atendimentos</div><div class="scVal">${s.today_appointments}</div></div>
-      <div class="sc"><div style="color:var(--dim);font-size:.7rem">Na Fila</div><div class="scVal" style="color:var(--am)">${s.queue_waiting}</div></div>
-      <div class="sc"><div style="color:var(--dim);font-size:.7rem">Total Clientes</div><div class="scVal">${s.total_customers}</div></div>
+    <div class="g2" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr))">
+      <div class="card"><div class="fl">Faturado Hoje</div><div style="font-size:1.5rem;color:var(--gr2);font-weight:bold;font-family:var(--fm)">${fM(s.today_revenue)}</div></div>
+      <div class="card"><div class="fl">Atendimentos</div><div style="font-size:1.5rem;font-weight:bold;font-family:var(--fm)">${s.today_appointments}</div></div>
+      <div class="card"><div class="fl">Fila Agora</div><div style="font-size:1.5rem;color:var(--am);font-weight:bold;font-family:var(--fm)">${s.queue_waiting}</div></div>
+      <div class="card"><div class="fl">Total Clientes</div><div style="font-size:1.5rem;font-weight:bold;font-family:var(--fm)">${s.total_customers}</div></div>
     </div>
-    <div class="card"><div class="cardT">RECEITA POR ORIGEM (UTM)</div>
-      ${(s.utm_performance||[]).map(u => u.source ? `<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--bd)"><span>${u.source}</span><span style="color:var(--gr2);font-weight:bold">${fmtM(u.revenue)}</span></div>` : '').join('') || '<div class="empty">Sem dados</div>'}
+    <div class="card"><div class="cardT">Origem de Faturamento (UTM)</div>
+      ${(s.utm_performance||[]).map(u=>u.source?`<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--bd)"><span>${u.source}</span><b style="color:var(--gr2)">${fM(u.revenue)}</b></div>`:'').join('')||'<p style="color:var(--dim)">Sem dados de origem</p>'}
     </div>`;
 }
 
-async function salvarAgendamento(){
-  const isFila = document.querySelector('input[name="tipoA"]:checked').value === 'fila';
+// --- AGENDA & FILA ---
+async function saveAg(){
+  const isF = document.querySelector('input[name="tAg"]:checked').value === 'fila';
   await SB.from('appointments').insert({
-    company_id: G.companyId, customer_id: el('aCli').value, service_id: el('aServ').value, professional_id: el('aProf').value,
-    is_walk_in: isFila, scheduled_at: isFila ? new Date().toISOString() : new Date(el('aData').value).toISOString(), status: isFila?'aguardando':'agendado'
+    company_id:G.cid, customer_id:el('aCli').value, service_id:el('aSer').value, professional_id:el('aPro').value,
+    is_walk_in:isF, scheduled_at:isF?new Date().toISOString():new Date(el('aDt').value).toISOString(), status:isF?'aguardando':'agendado'
   });
-  closeM('mAgend'); rAgenda();
+  cM('mAg'); rAge();
 }
 
-async function rAgenda(){
-  el('ct').innerHTML = 'Carregando...';
-  const { data } = await SB.from('appointments').select('id, is_walk_in, status, scheduled_at, customers(id, name, wallet_balance), services(name, price)')
-    .is('deleted_at', null).eq('scheduled_at::date', hoje()).order('scheduled_at');
+async function rAge(){
+  el('ct').innerHTML='Carregando agenda...';
+  const {data} = await SB.from('appointments').select('id,is_walk_in,status,scheduled_at,customers(id,name,wallet_balance),services(name,price)').is('deleted_at',null).eq('scheduled_at::date',hj()).order('scheduled_at');
+  const fs = (data||[]).filter(a=>a.is_walk_in && a.status!=='concluido');
+  const ag = (data||[]).filter(a=>!a.is_walk_in && a.status!=='concluido');
   
-  const filas = (data||[]).filter(a => a.is_walk_in && a.status !== 'concluido');
-  const agend = (data||
+  let h = `<div class="cardT">🧍 Fila de Espera (${fs.length})</div>`;
+  if(!fs.length) h+=`<div class="card" style="text-align:center;color:var(--dim)">Fila vazia</div>`;
+  fs.forEach((f,i)=>{
+    h+=`<div class="card" style="display:flex;align-items:center;gap:10px;border-left:4px solid var(--am)"><div style="width:30px;height:30px;background:var(--am);color:#000;border-radius:5px;display:flex;align-items:center;justify-content:center;font-weight:bold">${i+1}</div><div style="flex:1"><b>${f.customers?.name}</b><br><span style="font-size:11px;color:var(--dim)">${f.services?.name}</span></div><button class="btn" style="width:auto" onclick="chk('${f.id}','${f.customers?.id}',${f.services?.price||0},${f.customers?.wallet_balance||0})">Finalizar</button></div>`;
+  });
+
+  h += `<div class="cardT" style="margin-top:20px">📅 Agenda de Hoje (${ag.length})</div>`;
+  if(!ag.length) h+=`<div class="card" style="text-align:center;color:var(--dim)">Nenhum agendamento</div>`;
+  ag.forEach(a=>{
+    h+=`<div class="card" style="display:flex;align-items:center;gap:10px;border-left:4px solid var(--bl)"><div style="font-family:var(--fm);font-weight:bold;width:45px">${new Date(a.scheduled_at).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</div><div style="flex:1"><b>${a.customers?.name}</b><br><span style="font-size:11px;color:var(--dim)">${a.services?.name} - ${a.status}</span></div><button class="btn" style="width:auto" onclick="chk('${a.id}','${a.customers?.id}',${a.services?.price||0},${a.customers?.wallet_balance||0})">Finalizar</button></div>`;
+  });
+  el('ct').innerHTML=h;
+}
+
+// --- CHECKOUT ---
+function chk(aId, cId, tot, sal){
+  el('cIdA').value=aId; el('cIdC').value=cId; el('cTot').value=tot; el('cUsa').value=0;
+  el('cSal').innerText=fM(sal); el('cSal').dataset.s=sal;
+  calc(); oM('mChk');
+}
+function calc(){
+  let t=Number(el('cTot').value)||0, u=Number(el('cUsa').value)||0, max=Number(el('cSal').dataset.s)||0;
+  if(u>max){u=max; el('cUsa').value=u;} if(u>t){u=t; el('cUsa').value=u;}
+  el('cPag').innerText=fM(t-u);
+}
+async function pay(){
+  el('bChk').disabled=true; el('bChk').innerText='Processando...';
+  const aId=el('cIdA').value, cId=el('cIdC').value, t=Number(el('cTot').value)||0, u=Number(el('cUsa').value)||0, pg=t-u;
+  
+  // Conclui Agendamento
+  await SB.from('appointments').update({status:'concluido', total_value:t}).eq('id',aId);
+  
+  // Transação
+  let tId = null;
+  if(pg>0){
+    const {data} = await SB.from('transactions').insert({company_id:G.cid, appointment_id:aId, amount:pg, type:'entrada', payment_method:el('cPgto').value}).select('id').single();
+    tId = data?.id;
+  }
+  
+  // Cashback Uso
+  if(u>0) await SB.rpc('pay_with_cashback', {p_customer_id:cId, p_amount:u});
+  
+  // Cashback Geração
+  const rate = G.cmp?.settings?.cashback_rate ?? 0.05;
+  if(pg>0 && rate>0){
+    await SB.from('wallet_ledger').insert({company_id:G.cid, customer_id:cId, transaction_id:tId, amount:pg*rate, type:'earned', description:'Cashback da visita'});
+  }
+  
+  el('bChk').disabled=false; el('bChk').innerText='Confirmar Pagamento';
+  cM('mChk'); rAge(); alert('Checkout concluído!');
+}
+
+// --- CLIENTES ---
+async function saveCli(){
+  await SB.from('customers').insert({company_id:G.cid, name:el('cN').value, phone:el('cW').value, utm_source:el('cO').value});
+  cM('mCli'); load(); rCli();
+}
+function rCli(){
+  let h=`<div class="cardT">Base de Clientes (${G.cli.length})</div>`;
+  G.cli.forEach(c=>{
+    h+=`<div class="card" style="display:flex;justify-content:space-between;align-items:center"><div><b>${c.name}</b><br><span style="color:var(--dim);font-size:11px">${c.phone||'Sem telefone'}</span></div><div style="text-align:right"><span style="color:var(--dim);font-size:10px">Cashback:</span><br><b style="color:var(--am);font-family:var(--fm)">${fM(c.wallet_balance)}</b></div></div>`;
+  });
+  el('ct').innerHTML=h;
+}
+
+// --- CAIXA ---
+async function rCai(){
+  el('ct').innerHTML='Carregando caixa...';
+  const {data} = await SB.from('transactions').select('*').eq('company_id',G.cid).eq('date',hj()).order('created_at',{ascending:false});
+  let h='<div class="cardT">Transações de Hoje</div>';
+  if(!data?.length) h+=`<div class="card" style="text-align:center;color:var(--dim)">Caixa vazio</div>`;(data||[]).forEach(t=>{
+    h+=`<div class="card" style="display:flex;justify-content:space-between;align-items:center">
+      <div><b>${t.description||'Serviço'}</b><br><span style="color:var(--dim);font-size:11px">${t.payment_method||'Dinheiro'}</span></div>
+      <div style="font-family:var(--fm);color:${t.type==='entrada'?'var(--gr2)':'var(--re)'}">
+        ${t.type==='entrada'?'+':'-'} ${fmtM(t.amount)}
+      </div>
+    </div>`;
+  });
+  el('ct').innerHTML=h;
+}
+
+// --- CONFIGURAÇÕES (Z-API E CASHBACK) ---
+function rConfig(){
+  const s = G.company?.settings || {};
+  const cbRate = (s.cashback_rate !== undefined ? s.cashback_rate * 100 : 5); // 5% é o padrão
+  
+  el('ct').innerHTML = `
+    <div class="card">
+      <div class="cardT">📱 WhatsApp Automático (Z-API)</div>
+      <p style="font-size:11px;color:var(--dim);margin-bottom:10px">Conecte para disparar Lembretes e Cashbacks.</p>
+      <label class="fl">ID da Instância (Instance ID)</label>
+      <input class="fi" id="cfgZId" value="${s.zapi_instance_id || ''}" placeholder="Ex: 3B94...A12">
+      <label class="fl">Token da Instância</label>
+      <input class="fi" id="cfgZTk" value="${s.zapi_token || ''}" placeholder="Ex: F78A...991">
+    </div>
+    
+    <div class="card">
+      <div class="cardT">💰 Gamificação (Cashback)</div>
+      <p style="font-size:11px;color:var(--dim);margin-bottom:10px">Qual a % de retorno para o cliente? (Coloque 0 para desativar)</p>
+      <label class="fl">Porcentagem (%)</label>
+      <input class="fi" type="number" id="cfgCb" value="${cbRate}">
+    </div>
+  `;
+}
+
+async function salvarConfig(){
+  const s = G.company?.settings || {};
+  s.zapi_instance_id = el('cfgZId').value.trim();
+  s.zapi_token = el('cfgZTk').value.trim();
+  s.cashback_rate = (Number(el('cfgCb').value) || 0) / 100;
+  
+  el('tbR').innerHTML = '<button class="btn bG bSm">Salvando...</button>';
+  
+  const {error} = await SB.from('companies').update({settings: s}).eq('id', G.companyId);
+  
+  if(error){ 
+    alert('Erro ao salvar: ' + error.message); 
+  } else { 
+    G.company.settings = s; 
+    alert('Configurações salvas e ativadas!'); 
+  }
+  go('config'); // recarrega a tela
+}
+</script>
+</body>
+</html>
